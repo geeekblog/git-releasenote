@@ -1,0 +1,67 @@
+package common
+
+import (
+	"io"
+	"strings"
+	"time"
+
+	"github.com/go-git/go-git/v5"
+)
+
+//从git log中读取需要的内容
+func ReadLogs(repoPath string, from, to *time.Time) ([]*Commit, error) {
+	repo, err := git.PlainOpenWithOptions(repoPath, &git.PlainOpenOptions{})
+	if err != nil {
+		return nil, err
+	}
+	opt := &git.LogOptions{
+		Order: git.LogOrderCommitterTime,
+		Until: to,
+	}
+	if !from.IsZero() {
+		opt.Since = from
+	}
+	commitIter, err := repo.Log(opt)
+	if err != nil {
+		return nil, err
+	}
+
+	rsList := make([]*Commit, 0, 16)
+	for {
+		if commit, err := commitIter.Next(); err == nil {
+			k, m := parseMessage(commit.Message)
+			tmpRs := &Commit{
+				Keyword:    k,
+				Message:    m,
+				Body:       commit.Message,
+				Author:     commit.Author.Name,
+				Email:      commit.Author.Email,
+				Hash:       commit.Hash,
+				ShortHash:  commit.Hash.String()[:8],
+				CommitTime: commit.Committer.When,
+				Time:       commit.Committer.When.Format("2006-01-02 15:04:05"),
+			}
+			if k == KeywordUnknown || m == "" {
+				continue
+			}
+			rsList = append(rsList, tmpRs)
+		} else {
+			if err == io.EOF {
+				break
+			}
+		}
+	}
+
+	return rsList, nil
+}
+
+func parseMessage(message string) (Keyword, string) {
+	body := strings.Split(message, "\n")
+	header := body[0]
+	for _, key := range KeywordList {
+		if i := strings.Index(header, string(key)); i == 0 {
+			return key, strings.Replace(header, string(key)+": ", "", 1)
+		}
+	}
+	return KeywordUnknown, ""
+}
