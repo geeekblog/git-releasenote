@@ -1,7 +1,7 @@
 # ChangeLog
 
 {{range .}}
-# {{.Tag.Name}} {{.Tag.Time}}
+### {{.Tag.Name}} {{.Tag.Time}}
 {{range .Commits}}
 * [{{.ShortHash}}]  {{.Keyword}}  => {{.Message}} ({{.Time}})
 {{end}}
