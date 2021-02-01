@@ -1,0 +1,11 @@
+# Releasenote
+
+{{range .}}
+### {{.Version.Name}}
+{{range .Group}}
+##### {{.Keyword}}
+{{range .Messages}}
+* {{.}}
+{{end}}
+{{end}}
+{{end}}

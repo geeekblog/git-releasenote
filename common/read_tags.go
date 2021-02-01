@@ -10,7 +10,7 @@ import (
 )
 
 func ReadTags(repoPath string) ([]*Tag, error) {
-	repo, err := git.PlainOpenWithOptions(repoPath, &git.PlainOpenOptions{})
+	repo, err := git.PlainOpenWithOptions(repoPath, &git.PlainOpenOptions{DetectDotGit: true})
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +34,8 @@ func ReadTags(repoPath string) ([]*Tag, error) {
 			}
 
 			t := &Tag{
-				Name:    tag.Name().Short(),
-				TagTime: c.Committer.When,
-				Time:    c.Committer.When.Format("2006-01-02 15:04:05"),
+				Name: tag.Name().Short(),
+				Time: c.Committer.When,
 			}
 			rs = append(rs, t)
 		} else {
@@ -58,7 +57,7 @@ func ReadSortedTags(repoPath string) ([]*Tag, error) {
 	}
 
 	sort.Slice(list, func(i, j int) bool {
-		return list[i].TagTime.UnixNano() > list[j].TagTime.UnixNano()
+		return list[i].Time.UnixNano() > list[j].Time.UnixNano()
 	})
 
 	return list, nil
