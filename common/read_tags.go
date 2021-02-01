@@ -58,10 +58,7 @@ func ReadSortedTags(repoPath string) ([]*Tag, error) {
 	}
 
 	sort.Slice(list, func(i, j int) bool {
-		if list[i].TagTime.UnixNano() > list[j].TagTime.UnixNano() {
-			return true
-		}
-		return false
+		return list[i].TagTime.UnixNano() > list[j].TagTime.UnixNano()
 	})
 
 	return list, nil
