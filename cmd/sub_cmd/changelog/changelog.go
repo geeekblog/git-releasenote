@@ -93,13 +93,13 @@ func Run(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	absPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	ex, err := os.Executable()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	t, err := template.ParseFiles(absPath + "/config/CHANGELOG.template")
+	expath := filepath.Dir(ex)
+	t, err := template.ParseFiles(expath + "/config/CHANGELOG.template")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
