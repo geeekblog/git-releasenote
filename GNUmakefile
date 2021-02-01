@@ -1,4 +1,4 @@
-VERSION ?= $(shell git describe)
+VERSION ?= "newest"
 GO_VERSION ?= $(shell go version)
 BUILD_TIME ?= $(shell date "+%F %T")
 
@@ -36,16 +36,19 @@ build_linux:
 	-o bin/git-releasenote/git-releasenote git-releasenote/cmd/git-releasenote
 
 release_darwin: build_darwin copy_template
-	@tar czf bin/git-releasenote-darwin-$(VERSION).tar.gz bin/git-releasenote
+	@OS=darwin make package
 	@make clean
 
 release_win: build_win copy_template
-	@tar czf bin/git-releasenote-windows-$(VERSION).tar.gz bin/git-releasenote
+	@OS=windows make package
 	@make clean
 
 release_linux: build_linux copy_template
-	@tar czf bin/git-releasenote-linux-$(VERSION).tar.gz bin/git-releasenote
+	@OS=linux make package
 	@make clean
+
+package:
+	@cd bin && tar czf ./git-releasenote-$(OS)-$(VERSION).tar.gz ./git-releasenote
 
 copy_template:
 	@cp -R config bin/git-releasenote
