@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"git-releasenote/cmd/sub_cmd/changelog"
+	"git-releasenote/cmd/sub_cmd/releasenote"
 	"git-releasenote/cmd/sub_cmd/version"
 	"os"
 
@@ -13,6 +14,7 @@ func Run() {
 	rootCmd := &cobra.Command{}
 	rootCmd.AddCommand(version.Command)
 	rootCmd.AddCommand(changelog.Command)
+	rootCmd.AddCommand(releasenote.Command)
 	err := rootCmd.Execute()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
