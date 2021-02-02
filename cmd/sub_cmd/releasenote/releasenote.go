@@ -1,4 +1,4 @@
-package changelog
+package releasenote
 
 import (
 	"fmt"
@@ -13,8 +13,8 @@ import (
 
 var (
 	Command = &cobra.Command{
-		Use:   "changelog",
-		Short: "make change log",
+		Use:   "releasenote",
+		Short: "make release note",
 		Long:  "",
 		Run:   Run,
 	}
@@ -74,11 +74,11 @@ func Run(cmd *cobra.Command, args []string) {
 	}
 
 	//拆分出时间范围内的tag
-	fromTagIndex := 0
+	fromTagIndex := len(tags)
 	for index, t := range tags {
 		if t.Time.Before(fromTime) {
 			if index != 0 {
-				fromTagIndex = index - 1
+				fromTagIndex = index
 			}
 			break
 		}
@@ -94,13 +94,13 @@ func Run(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	t, err := template.GetTemplate(template.TypeChangeLog, *templateDir)
+	t, err := template.GetTemplate(template.TypeReleaseNote, *templateDir)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	cl := common.ToChangeLog(list, tags)
+	rn := common.ToReleaseNote(list, tags)
 
 	//整理模板需要的结构
 	var wr io.Writer
@@ -114,7 +114,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 		wr = file
 	}
-	err = t.Execute(wr, cl)
+	err = t.Execute(wr, rn)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

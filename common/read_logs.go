@@ -10,7 +10,7 @@ import (
 
 //从git log中读取需要的内容
 func ReadLogs(repoPath string, from, to *time.Time) ([]*Commit, error) {
-	repo, err := git.PlainOpenWithOptions(repoPath, &git.PlainOpenOptions{})
+	repo, err := git.PlainOpenWithOptions(repoPath, &git.PlainOpenOptions{DetectDotGit: true})
 	if err != nil {
 		return nil, err
 	}
@@ -31,15 +31,13 @@ func ReadLogs(repoPath string, from, to *time.Time) ([]*Commit, error) {
 		if commit, err := commitIter.Next(); err == nil {
 			k, m := parseMessage(commit.Message)
 			tmpRs := &Commit{
-				Keyword:    k,
-				Message:    m,
-				Body:       commit.Message,
-				Author:     commit.Author.Name,
-				Email:      commit.Author.Email,
-				Hash:       commit.Hash,
-				ShortHash:  commit.Hash.String()[:8],
-				CommitTime: commit.Committer.When,
-				Time:       commit.Committer.When.Format("2006-01-02 15:04:05"),
+				Keyword: k,
+				Message: m,
+				Body:    commit.Message,
+				Author:  commit.Author.Name,
+				Email:   commit.Author.Email,
+				Hash:    commit.Hash,
+				Time:    commit.Committer.When,
 			}
 			if k == KeywordUnknown || m == "" {
 				continue

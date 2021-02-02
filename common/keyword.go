@@ -13,6 +13,10 @@ const (
 	KeywordTest     Keyword = "test"
 	KeywordChore    Keyword = "chore"
 	KeywordRevert   Keyword = "revert"
+
+	TimeFormat          = "2006-01-02 15:04:05"
+	GroupKeywordFeature = "Feature"
+	GroupKeywordOther   = "Other"
 )
 
 var KeywordList = []Keyword{

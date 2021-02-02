@@ -1,6 +1,9 @@
 VERSION ?= "newest"
+LOG_LEVEL ?= "error"
 GO_VERSION ?= $(shell go version)
 BUILD_TIME ?= $(shell date "+%F %T")
+TEMPLATE_CHANGELOG = `cat config/CHANGELOG.template`
+TEMPLATE_RELEASE_NOTE = `cat config/RELEASENOTE.template`
 
 export GO111MODULE := on
 .PHONY: clean test lint build_darwin build_win build_linux release release_darwin release_linux release_win copy_template
@@ -18,21 +21,26 @@ build_darwin:
 	@GOOS=darwin GOARCH=amd64 \
 	go build -ldflags "-X 'git-releasenote/cmd/sub_cmd/version.appVersion=$(VERSION)' \
 	-X 'git-releasenote/cmd/sub_cmd/version.buildTime=$(BUILD_TIME)' \
-	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)'" \
+	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)' \
+	-X 'git-releasenote/common/template.defaultChangeLogTemplate=$(TEMPLATE_CHANGELOG)' \
+	-X 'git-releasenote/common/template.defaultReleaseNoteTemplate=$(TEMPLATE_RELEASE_NOTE)' \
+	-X 'git-releasenote/cmd/main.logLevel=$(LOG_LEVEL)'" \
 	-o bin/git-releasenote/git-releasenote git-releasenote/cmd/git-releasenote
 
 build_win:
 	@GOOS=windows GOARCH=amd64 \
 	go build -ldflags "-X 'git-releasenote/cmd/sub_cmd/version.appVersion=$(VERSION)' \
 	-X 'git-releasenote/cmd/sub_cmd/version.buildTime=$(BUILD_TIME)' \
-	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)'" \
+	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)' \
+	-X 'git-releasenote/cmd/main.logLevel=$(LOG_LEVEL)'" \
 	-o bin/git-releasenote/git-releasenote.exe git-releasenote/cmd/git-releasenote
 
 build_linux:
 	@GOOS=linux GOARCH=amd64 \
 	go build -ldflags "-X 'git-releasenote/cmd/sub_cmd/version.appVersion=$(VERSION)' \
 	-X 'git-releasenote/cmd/sub_cmd/version.buildTime=$(BUILD_TIME)' \
-	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)'" \
+	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)' \
+	-X 'git-releasenote/cmd/main.logLevel=$(LOG_LEVEL)'" \
 	-o bin/git-releasenote/git-releasenote git-releasenote/cmd/git-releasenote
 
 release_darwin: build_darwin copy_template
