@@ -73,12 +73,15 @@ func Run(cmd *cobra.Command, args []string) {
 		endTime = time.Now()
 	}
 
+	fmt.Println("获取列表的起始时间为:", fromTime.Format(common.TimeFormat))
+	fmt.Println("获取列表的结束时间为:", endTime.Format(common.TimeFormat))
+
 	//拆分出时间范围内的tag
-	fromTagIndex := 0
+	fromTagIndex := len(tags)
 	for index, t := range tags {
 		if t.Time.Before(fromTime) {
 			if index != 0 {
-				fromTagIndex = index - 1
+				fromTagIndex = index
 			}
 			break
 		}
