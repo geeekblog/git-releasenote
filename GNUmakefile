@@ -25,7 +25,7 @@ build_darwin:
 	-X 'git-releasenote/cmd/sub_cmd/version.buildTime=$(BUILD_TIME)' \
 	-X 'git-releasenote/cmd/sub_cmd/version.goVersion=$(GO_VERSION)' \
 	-X 'git-releasenote/common/template.defaultChangeLogTemplate=$(TEMPLATE_CHANGELOG)' \
-	-X 'git-releasenote/common/template.defaultReleaseNoteTemplate=$(TEMPLATE_RELEASE_NOTE)" \
+	-X 'git-releasenote/common/template.defaultReleaseNoteTemplate=$(TEMPLATE_RELEASE_NOTE)'" \
 	-o bin/git-releasenote/git-releasenote git-releasenote/cmd/git-releasenote
 
 build_win:
