@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/go-git/go-git/v5"
 )
 
@@ -33,15 +35,16 @@ func ReadLogs(repoPath string, from, to *time.Time) ([]*Commit, error) {
 			tmpRs := &Commit{
 				Keyword: k,
 				Message: m,
-				Body:    commit.Message,
-				Author:  commit.Author.Name,
-				Email:   commit.Author.Email,
+				Body:    strings.TrimSpace(commit.Message),
+				Author:  strings.TrimSpace(commit.Author.Name),
+				Email:   strings.TrimSpace(commit.Author.Email),
 				Hash:    commit.Hash,
 				Time:    commit.Committer.When,
 			}
 			if k == KeywordUnknown || m == "" {
 				continue
 			}
+			logrus.Debugln(tmpRs.Hash.String() + "[" + tmpRs.Author + "]" + string(tmpRs.Keyword) + ":" + tmpRs.Message)
 			rsList = append(rsList, tmpRs)
 		} else {
 			if err == io.EOF {
@@ -58,7 +61,7 @@ func parseMessage(message string) (Keyword, string) {
 	header := body[0]
 	for _, key := range KeywordList {
 		if i := strings.Index(header, string(key)); i == 0 {
-			return key, strings.Replace(header, string(key)+": ", "", 1)
+			return key, strings.TrimSpace(strings.Replace(header, string(key)+": ", "", 1))
 		}
 	}
 	return KeywordUnknown, ""

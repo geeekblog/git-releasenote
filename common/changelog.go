@@ -11,6 +11,8 @@ type ChangeLogTagBody struct {
 	Commits []*CommitForShow
 }
 
+const changeLogDebugFormat = "[%s:%s]%s ==> %s -> %s"
+
 //调用的时候请确认commitList和tagList都是按时间倒序排列
 func ToChangeLog(commitList []*Commit, tagList []*Tag) []*ChangeLogTagBody {
 	list := make([]*ChangeLogTagBody, 0)
@@ -20,6 +22,7 @@ func ToChangeLog(commitList []*Commit, tagList []*Tag) []*ChangeLogTagBody {
 	}
 	commitIndex := 0
 	//处理提交记录时间晚于最新Tag的情况
+	logrus.Debugln("tag长度:", len(tagList))
 	if len(tagList) == 0 || commitList[0].Time.After(tagList[0].Time) {
 		tmpChangeLogBody := &ChangeLogTagBody{
 			Version: &TagForShow{
@@ -28,6 +31,7 @@ func ToChangeLog(commitList []*Commit, tagList []*Tag) []*ChangeLogTagBody {
 			Commits: make([]*CommitForShow, 0),
 		}
 		for ; commitIndex < len(commitList); commitIndex++ {
+			logrus.Debugf(changeLogDebugFormat, tmpChangeLogBody.Version.Name, "", commitList[commitIndex].Message, commitList[commitIndex].Time.Format(TimeFormat), commitList[commitIndex].Author)
 			if len(tagList) > 0 && !commitList[commitIndex].Time.After(tagList[0].Time) {
 				break
 			}
@@ -43,6 +47,7 @@ func ToChangeLog(commitList []*Commit, tagList []*Tag) []*ChangeLogTagBody {
 			Commits: make([]*CommitForShow, 0),
 		}
 		for ; commitIndex < len(commitList); commitIndex++ {
+			logrus.Debugf(changeLogDebugFormat, tmpChangeLogBody.Version.Name, "", commitList[commitIndex].Message, commitList[commitIndex].Time.Format(TimeFormat), commitList[commitIndex].Author)
 			//如果还有下一个标签，并且当前commit比下一个标签更早的话，需要开启下一个标签
 			if tagIndex+1 < len(tagList) && !commitList[commitIndex].Time.After(tagList[tagIndex+1].Time) {
 				break
